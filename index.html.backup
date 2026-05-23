@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IndoPredict — Siapa Netizen Paling Akurat?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--white:#fff;--off:#f7f6f3;--ink:#0f0f0f;--ink-light:#6b6b6b;--ink-faint:#d0cfc9;--accent:#ff3b30;--gold:#c9a84c;--green:#2e7d32;--red:#c62828;--yes-bg:#e8f5e9;--no-bg:#fce4ec;--border:#e8e8e4;--r:16px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+
+/* NAV */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;letter-spacing:-.5px;cursor:pointer;}
+.logo span{color:var(--accent);}
+.nav-links{display:flex;gap:4px;}
+.nav-btn{background:none;border:none;padding:8px 16px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--ink-light);cursor:pointer;transition:all .15s;}
+.nav-btn:hover,.nav-btn.active{background:var(--off);color:var(--ink);}
+.header-right{display:flex;align-items:center;gap:12px;}
+.credit-chip{display:flex;align-items:center;gap:7px;background:var(--off);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;}
+.credit-chip:hover{background:#f0efe9;}
+.credit-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;}
+.av-btn{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--white);border:none;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;}
+.av-btn:hover{opacity:.8;}
+
+/* PAGES */
+.page{display:none;}.page.active{display:block;}
+
+/* TICKER */
+.ticker-wrap{background:var(--ink);overflow:hidden;padding:9px 0;}
+.ticker-inner{display:flex;gap:48px;animation:ticker 28s linear infinite;white-space:nowrap;width:max-content;}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.4px;}
+.ti .ty{color:#69f0ae;}.ti .tn{color:#ff5252;}.ti .ts{color:rgba(255,255,255,.2);}
+
+/* HERO */
+.hero{padding:72px 40px 56px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hero-label{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(34px,4vw,54px);font-weight:900;line-height:1.1;letter-spacing:-1.5px;margin-bottom:18px;}
+.hero h1 em{font-style:italic;color:var(--accent);}
+.hero p{font-size:16px;line-height:1.7;color:var(--ink-light);max-width:400px;margin-bottom:28px;}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-p{background:var(--ink);color:var(--white);border:none;border-radius:100px;padding:13px 26px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:transform .2s,opacity .2s;}
+.btn-p:hover{transform:translateY(-2px);opacity:.85;}
+.btn-o{background:transparent;color:var(--ink);border:1.5px solid var(--border);border-radius:100px;padding:13px 26px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:border-color .2s;}
+.btn-o:hover{border-color:var(--ink);}
+.hero-stats{display:flex;gap:28px;margin-top:36px;padding-top:28px;border-top:1px solid var(--border);}
+.snum{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;}
+.slabel{font-size:11px;color:var(--ink-light);margin-top:2px;}
+.hero-visual{position:relative;}
+.badge-float{position:absolute;top:-14px;right:-14px;background:var(--ink);color:var(--white);border-radius:100px;padding:7px 14px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.15);animation:floatB 3s ease-in-out infinite;z-index:2;}
+@keyframes floatB{0%,100%{transform:rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.feat-card{background:var(--white);border:1.5px solid var(--border);border-radius:24px;padding:26px;box-shadow:0 8px 40px rgba(0,0,0,.06);animation:floatC 4s ease-in-out infinite;}
+@keyframes floatC{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.ctag{display:inline-flex;align-items:center;gap:6px;background:var(--off);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-light);margin-bottom:14px;}
+.pdot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pdot 1.5s infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.cq{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;line-height:1.35;margin-bottom:20px;}
+.mbl{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:6px;}
+.mbb{height:6px;background:#fce4ec;border-radius:100px;overflow:hidden;margin-bottom:18px;}
+.mbf{height:100%;background:var(--green);border-radius:100px;}
+.vrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.vbtn{border:1.5px solid var(--border);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:all .18s;background:var(--white);}
+.vbtn.yes:hover{background:var(--yes-bg);border-color:#4caf50;}
+.vbtn.no:hover{background:var(--no-bg);border-color:#e91e63;}
+.vi{font-size:18px;display:block;margin-bottom:3px;}
+.vl{font-size:13px;font-weight:600;}
+.vc{font-size:11px;color:var(--ink-light);margin-top:2px;}
+.cmeta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-light);padding-top:14px;border-top:1px solid var(--border);}
+
+/* SECTION */
+.section{max-width:1100px;margin:0 auto;padding:56px 40px;}
+.sec-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:-.5px;}
+.sec-link{font-size:13px;font-weight:500;color:var(--ink-light);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;cursor:pointer;}
+.sec-link:hover{color:var(--ink);}
+.divider{border:none;border-top:1px solid var(--border);}
+
+/* CATEGORY */
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+.cpill{border:1.5px solid var(--border);border-radius:100px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--white);color:var(--ink-light);}
+.cpill:hover,.cpill.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
+/* MARKET GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;}
+.mcard{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:22px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.mcard:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.07);}
+.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .2s;}
+.mcard:hover::before{transform:scaleX(1);}
+.mc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.mc-cat{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-light);}
+.mc-dl{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink-light);}
+.mc-q{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;line-height:1.4;margin-bottom:16px;}
+.mc-bl{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px;}
+.mc-yes{color:var(--green);}.mc-no{color:var(--red);}
+.mc-bb{height:5px;background:#fce4ec;border-radius:100px;overflow:hidden;margin-bottom:14px;}
+.mc-bf{height:100%;background:var(--green);border-radius:100px;}
+.mc-ft{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);}
+.mc-vt{font-size:12px;color:var(--ink-light);}
+.mc-cost{font-size:12px;font-weight:600;color:var(--gold);}
+.mc-vtag{display:inline-flex;align-items:center;gap:4px;background:var(--off);border-radius:100px;padding:3px 10px;font-size:11px;font-weight:600;}
+
+/* HOW */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.how-item{padding:24px 20px;border:1.5px solid var(--border);border-radius:var(--r);transition:all .2s;}
+.how-item:hover{border-color:var(--ink);transform:translateY(-2px);}
+.how-num{font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:var(--ink-faint);line-height:1;margin-bottom:14px;}
+.how-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+.how-desc{font-size:13px;line-height:1.6;color:var(--ink-light);}
+
+/* LEADERBOARD PAGE */
+.lb-page{max-width:800px;margin:0 auto;padding:48px 40px;}
+.lb-page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;}
+.lb-page-sub{font-size:15px;color:var(--ink-light);margin-bottom:28px;}
+.lb-tabs{display:flex;gap:8px;margin-bottom:28px;}
+.lb-tab{border:1.5px solid var(--border);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--white);color:var(--ink-light);}
+.lb-tab.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+.podium{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:12px;margin-bottom:24px;align-items:end;}
+.pod{border:1.5px solid var(--border);border-radius:20px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;}
+.pod:hover{border-color:var(--ink);transform:translateY(-2px);}
+.pod.p1{background:var(--off);border-color:var(--gold);}
+.pod-crown{font-size:24px;margin-bottom:8px;}
+.pod-av{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;margin:0 auto 10px;}
+.pod-name{font-size:13px;font-weight:700;margin-bottom:4px;}
+.pod-pts{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.pod-pts-lbl{font-size:10px;color:var(--ink-light);}
+.pod-acc{font-size:12px;color:var(--green);font-weight:600;margin-top:4px;}
+.lb-table{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.lb-thead{display:grid;grid-template-columns:48px 1fr 100px 90px 80px;padding:10px 20px;background:var(--off);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--border);}
+.lb-row{display:grid;grid-template-columns:48px 1fr 100px 90px 80px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s;cursor:pointer;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:var(--off);}
+.lb-rank{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--ink-light);}
+.lb-uc{display:flex;align-items:center;gap:12px;}
+.lb-av{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.lb-un{font-size:13px;font-weight:600;}
+.lb-bs{font-size:10px;font-weight:600;color:var(--ink-light);margin-top:1px;}
+.lb-pts{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
+.lb-acc{font-size:13px;font-weight:600;color:var(--green);}
+.lb-st{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink-light);}
+
+/* PROFILE PAGE */
+.pf-page{max-width:800px;margin:0 auto;padding:48px 40px;}
+.pf-card{border:1.5px solid var(--border);border-radius:24px;padding:32px;margin-bottom:24px;display:flex;gap:28px;align-items:flex-start;}
+.pf-av{width:80px;height:80px;border-radius:50%;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:30px;font-weight:700;flex-shrink:0;}
+.pf-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:4px;}
+.pf-handle{font-size:14px;color:var(--ink-light);margin-bottom:12px;}
+.pf-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.pf-badge{display:inline-flex;align-items:center;gap:5px;background:var(--off);border:1px solid var(--border);border-radius:100px;padding:5px 12px;font-size:12px;font-weight:600;}
+.pf-bio{font-size:13px;color:var(--ink-light);line-height:1.6;}
+.pf-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.pfs{border:1.5px solid var(--border);border-radius:var(--r);padding:18px 16px;text-align:center;}
+.pfs-num{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:4px;}
+.pfs-lbl{font-size:11px;color:var(--ink-light);}
+.pf-sec-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:16px;}
+.hist-list{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.hist-item{display:grid;grid-template-columns:1fr 70px 90px;padding:14px 18px;border-bottom:1px solid var(--border);align-items:center;gap:12px;}
+.hist-item:last-child{border-bottom:none;}
+.hist-q{font-size:13px;font-weight:500;line-height:1.4;}
+.hvote{font-size:12px;font-weight:700;text-align:center;padding:4px 8px;border-radius:100px;}
+.hvote.yes{background:var(--yes-bg);color:var(--green);}
+.hvote.no{background:var(--no-bg);color:var(--red);}
+.hvote.pending{background:var(--off);color:var(--ink-light);}
+.hresult{font-size:12px;font-weight:600;text-align:right;}
+.hresult.win{color:var(--green);}.hresult.lose{color:var(--red);}.hresult.pending{color:var(--ink-light);}
+.clog{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:24px;}
+.clog-item{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);}
+.clog-item:last-child{border-bottom:none;}
+.cl-desc{font-size:13px;font-weight:500;}
+.cl-date{font-size:11px;color:var(--ink-light);margin-top:2px;}
+.cl-amt{font-family:'DM Mono',monospace;font-size:13px;font-weight:600;}
+.cl-amt.plus{color:var(--green);}.cl-amt.minus{color:var(--red);}
+
+/* OVERLAYS */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;}
+.ov.open{opacity:1;pointer-events:all;}
+.popup{background:var(--white);border-radius:24px;padding:32px;max-width:460px;width:100%;transform:translateY(24px);transition:transform .25s cubic-bezier(.34,1.56,.64,1);box-shadow:0 24px 80px rgba(0,0,0,.15);position:relative;}
+.ov.open .popup{transform:translateY(0);}
+.pop-close{position:absolute;top:16px;right:16px;background:var(--off);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.pop-close:hover{background:var(--border);}
+
+/* VOTE POPUP */
+.pop-tag{display:inline-flex;align-items:center;gap:6px;background:var(--off);border-radius:100px;padding:4px 12px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-light);margin-bottom:14px;}
+.pop-q{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;line-height:1.3;margin-bottom:20px;}
+.pop-bar-sec{background:var(--off);border-radius:14px;padding:16px;margin-bottom:20px;}
+.pop-bar-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;}
+.pop-bar-row{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:6px;}
+.pop-bar-bg{height:8px;background:#fce4ec;border-radius:100px;overflow:hidden;}
+.pop-bar-fill{height:100%;background:var(--green);border-radius:100px;transition:width .6s ease;}
+.pop-voters{font-size:12px;color:var(--ink-light);margin-top:8px;}
+.pop-vote-lbl{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;}
+.pop-vote-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.pvbtn{border:2px solid var(--border);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all .18s;background:var(--white);}
+.pvbtn.yes:hover{background:var(--yes-bg);border-color:#4caf50;transform:translateY(-2px);}
+.pvbtn.no:hover{background:var(--no-bg);border-color:#e91e63;transform:translateY(-2px);}
+.pvbtn.sel-yes{background:var(--yes-bg);border-color:#4caf50;}
+.pvbtn.sel-no{background:var(--no-bg);border-color:#e91e63;}
+.pvi{font-size:22px;display:block;margin-bottom:5px;}
+.pvl{font-size:14px;font-weight:700;}
+.pvs{font-size:11px;color:var(--ink-light);margin-top:3px;}
+.pcr-row{display:flex;align-items:center;justify-content:space-between;background:var(--off);border-radius:12px;padding:12px 16px;margin-bottom:16px;}
+.pcr-lbl{font-size:13px;color:var(--ink-light);}
+.pcr-bal{font-size:11px;color:var(--ink-faint);margin-top:2px;}
+.pcr-ctrl{display:flex;align-items:center;gap:10px;}
+.pcr-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.pcr-btn:hover{border-color:var(--ink);}
+.pcr-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;min-width:32px;text-align:center;}
+.pop-cfm{width:100%;background:var(--ink);color:var(--white);border:none;border-radius:14px;padding:15px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.pop-cfm:hover{opacity:.8;}
+.pop-cfm:disabled{opacity:.4;cursor:not-allowed;}
+.pop-dl{font-size:11px;color:var(--ink-light);text-align:center;margin-top:10px;}
+
+/* BUY CREDIT */
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.pkg{border:1.5px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
+.pkg:hover,.pkg.sel{border-color:var(--ink);background:var(--off);}
+.pkg.pop{border-color:var(--gold);}
+.pkg-pop-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--white);font-size:9px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:100px;white-space:nowrap;}
+.pkg-cr{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;}
+.pkg-lbl{font-size:11px;color:var(--ink-light);margin:2px 0;}
+.pkg-price{font-size:13px;font-weight:600;}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:6px;}
+.modal-sub{font-size:14px;color:var(--ink-light);margin-bottom:24px;line-height:1.6;}
+.modal-btn{width:100%;background:var(--ink);color:var(--white);border:none;border-radius:14px;padding:15px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.modal-btn:hover{opacity:.8;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--ink);color:var(--white);padding:11px 22px;border-radius:100px;font-size:13px;font-weight:500;z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 40px;display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;}
+.fl{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;}
+.fl span{color:var(--accent);}
+.fn{font-size:11px;color:var(--ink-light);max-width:300px;line-height:1.6;text-align:center;}
+.flinks{display:flex;gap:16px;}
+.flinks a{font-size:12px;color:var(--ink-light);text-decoration:none;transition:color .15s;}
+.flinks a:hover{color:var(--ink);}
+
+@media(max-width:768px){
+  header{padding:0 16px;}
+  .nav-links{display:none;}
+  .hero{grid-template-columns:1fr;padding:32px 16px;gap:32px;}
+  .hero-visual{display:none;}
+  .section,.lb-page,.pf-page{padding:32px 16px;}
+  .how-grid{grid-template-columns:1fr 1fr;}
+  .lb-thead,.lb-row{grid-template-columns:40px 1fr 80px 70px;}
+  .lb-st{display:none;}
+  .pf-stats{grid-template-columns:1fr 1fr;}
+  .podium{grid-template-columns:1fr 1fr 1fr;}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:24px 16px;}
+  .hist-item{grid-template-columns:1fr 60px;}
+  .hresult{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ti">BBM Naik Sebelum Juli? <span class="ty">YES 62%</span> <span class="ts">·</span> <span class="tn">NO 38%</span></span>
+    <span class="ti">Dollar Tembus Rp17k? <span class="ty">YES 44%</span> <span class="ts">·</span> <span class="tn">NO 56%</span></span>
+    <span class="ti">Timnas Menang vs Thailand? <span class="ty">YES 71%</span> <span class="ts">·</span> <span class="tn">NO 29%</span></span>
+    <span class="ti">Jakarta Banjir Minggu Ini? <span class="ty">YES 33%</span> <span class="ts">·</span> <span class="tn">NO 67%</span></span>
+    <span class="ti">IHSG Tembus 7500? <span class="ty">YES 51%</span> <span class="ts">·</span> <span class="tn">NO 49%</span></span>
+    <span class="ti">Bitcoin $70k Bulan Ini? <span class="ty">YES 55%</span> <span class="ts">·</span> <span class="tn">NO 45%</span></span>
+    <span class="ti">BBM Naik Sebelum Juli? <span class="ty">YES 62%</span> <span class="ts">·</span> <span class="tn">NO 38%</span></span>
+    <span class="ti">Dollar Tembus Rp17k? <span class="ty">YES 44%</span> <span class="ts">·</span> <span class="tn">NO 56%</span></span>
+    <span class="ti">Timnas Menang vs Thailand? <span class="ty">YES 71%</span> <span class="ts">·</span> <span class="tn">NO 29%</span></span>
+    <span class="ti">Jakarta Banjir Minggu Ini? <span class="ty">YES 33%</span> <span class="ts">·</span> <span class="tn">NO 67%</span></span>
+    <span class="ti">IHSG Tembus 7500? <span class="ty">YES 51%</span> <span class="ts">·</span> <span class="tn">NO 49%</span></span>
+    <span class="ti">Bitcoin $70k Bulan Ini? <span class="ty">YES 55%</span> <span class="ts">·</span> <span class="tn">NO 45%</span></span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo" onclick="goPage('home')">Indo<span>Predict</span></div>
+  <div class="nav-links">
+    <button class="nav-btn active" id="nb-home" onclick="goPage('home')">Home</button>
+    <button class="nav-btn" id="nb-lb" onclick="goPage('leaderboard')">Leaderboard</button>
+    <button class="nav-btn" id="nb-pf" onclick="goPage('profile')">Profil</button>
+  </div>
+  <div class="header-right">
+    <div class="credit-chip" onclick="openBuyModal()">
+      <div class="credit-dot"></div>
+      <span id="creditCount">250 Credits</span>
+    </div>
+    <button class="av-btn" onclick="goPage('profile')">A</button>
+  </div>
+</header>
+
+<!-- ════════ PAGE: HOME ════════ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div>
+      <div class="hero-label">🇮🇩 Prediction Game Indonesia</div>
+      <h1>Netizen paling <em>sotoy</em> se-Indonesia,<br>dibuktiin pake skor.</h1>
+      <p>Prediksi isu Indonesia — ekonomi, politik, bola, cuaca, hiburan. Buktikan lo lebih akurat dari semua netizen lainnya.</p>
+      <div class="hero-cta">
+        <button class="btn-p" onclick="document.getElementById('markets').scrollIntoView({behavior:'smooth'})">Mulai Prediksi →</button>
+        <button class="btn-o" onclick="goPage('leaderboard')">Lihat Leaderboard</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="snum">12.4K</div><div class="slabel">Prediksi aktif</div></div>
+        <div><div class="snum">89K</div><div class="slabel">User terdaftar</div></div>
+        <div><div class="snum">74%</div><div class="slabel">Akurasi top user</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="badge-float">🔥 1.2K votes hari ini</div>
+      <div class="feat-card">
+        <div class="ctag"><div class="pdot"></div> Live · Ekonomi</div>
+        <div class="cq">Dollar tembus Rp17.000 sebelum akhir Juni?</div>
+        <div class="mbl"><span style="color:var(--green);font-weight:600;">YES 44%</span><span style="color:var(--red);font-weight:600;">NO 56%</span></div>
+        <div class="mbb"><div class="mbf" style="width:44%"></div></div>
+        <div class="vrow">
+          <div class="vbtn yes" onclick="openVotePopup(1)"><span class="vi">🟢</span><div class="vl">YES</div><div class="vc">10 credit</div></div>
+          <div class="vbtn no" onclick="openVotePopup(1)"><span class="vi">🔴</span><div class="vl">NO</div><div class="vc">10 credit</div></div>
+        </div>
+        <div class="cmeta"><span>3.241 sudah vote</span><span>Tutup 30 Jun</span></div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider">
+  <section class="section" id="markets">
+    <div class="sec-hdr">
+      <h2 class="sec-title">Market Aktif</h2>
+      <span class="sec-link">Lihat semua →</span>
+    </div>
+    <div class="cats">
+      <div class="cpill active" onclick="filterCat(this,'all')">Semua</div>
+      <div class="cpill" onclick="filterCat(this,'ekonomi')">💰 Ekonomi</div>
+      <div class="cpill" onclick="filterCat(this,'bola')">⚽ Bola</div>
+      <div class="cpill" onclick="filterCat(this,'politik')">🏛️ Politik</div>
+      <div class="cpill" onclick="filterCat(this,'cuaca')">🌧️ Cuaca</div>
+      <div class="cpill" onclick="filterCat(this,'hiburan')">🎭 Hiburan</div>
+      <div class="cpill" onclick="filterCat(this,'kripto')">₿ Kripto</div>
+    </div>
+    <div class="mgrid" id="marketGrid"></div>
+  </section>
+  <hr class="divider">
+  <section class="section">
+    <div class="sec-hdr"><h2 class="sec-title">Cara Main</h2></div>
+    <div class="how-grid">
+      <div class="how-item"><div class="how-num">01</div><div class="how-title">Daftar & Dapat Credit</div><div class="how-desc">Signup gratis, langsung dapat 100 credit. Login harian kasih bonus 10 credit.</div></div>
+      <div class="how-item"><div class="how-num">02</div><div class="how-title">Pilih Event & Bet</div><div class="how-desc">Taruh credit di prediksi YES atau NO. Atur sendiri mau taruh berapa.</div></div>
+      <div class="how-item"><div class="how-num">03</div><div class="how-title">Tunggu Hasil</div><div class="how-desc">Event resolve otomatis. Bener = point naik. Salah = credit hangus.</div></div>
+      <div class="how-item"><div class="how-num">04</div><div class="how-title">Nangkring di Leaderboard</div><div class="how-desc">Top 10 bulanan dapat hadiah. Reset tiap tanggal 1. Buktiin siapa paling akurat.</div></div>
+    </div>
+  </section>
+  <hr class="divider">
+  <footer>
+    <div class="fl">Indo<span>Predict</span></div>
+    <div class="fn">Platform tebak prediksi event Indonesia. Credit tidak dapat dicairkan. Bukan produk keuangan atau perjudian.</div>
+    <div class="flinks"><a href="#">Tentang</a><a href="#">Syarat</a><a href="#">Privasi</a></div>
+  </footer>
+</div>
+
+<!-- ════════ PAGE: LEADERBOARD ════════ -->
+<div class="page" id="page-leaderboard">
+  <div class="lb-page">
+    <div class="lb-page-title">Leaderboard 🏆</div>
+    <div class="lb-page-sub">Siapa netizen paling akurat se-Indonesia bulan ini?</div>
+    <div class="lb-tabs">
+      <div class="lb-tab active" onclick="switchLbTab(this,'Mei 2025')">Mei 2025</div>
+      <div class="lb-tab" onclick="switchLbTab(this,'Apr 2025')">Apr 2025</div>
+      <div class="lb-tab" onclick="switchLbTab(this,'Mar 2025')">Mar 2025</div>
+    </div>
+    <div class="podium" id="lbPodium"></div>
+    <div class="lb-table">
+      <div class="lb-thead"><div>#</div><div>User</div><div>Points</div><div>Akurasi</div><div>Streak</div></div>
+      <div id="lbBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: PROFILE ════════ -->
+<div class="page" id="page-profile">
+  <div class="pf-page">
+    <div class="pf-card">
+      <div class="pf-av">A</div>
+      <div>
+        <div class="pf-name">@artnesh</div>
+        <div class="pf-handle">Bergabung sejak Mei 2025 · Jakarta</div>
+        <div class="pf-badges">
+          <div class="pf-badge">⚡ Rank #47</div>
+          <div class="pf-badge">🔥 Streak 5 hari</div>
+          <div class="pf-badge">💰 Ekonomi Watcher</div>
+        </div>
+        <div class="pf-bio">NFT artist & Web3 builder. Prediksi ekonomi & kripto adalah keahlian gue.</div>
+      </div>
+    </div>
+    <div class="pf-stats">
+      <div class="pfs"><div class="pfs-num" id="pf-credits">250</div><div class="pfs-lbl">Credits</div></div>
+      <div class="pfs"><div class="pfs-num">4.820</div><div class="pfs-lbl">Total Points</div></div>
+      <div class="pfs"><div class="pfs-num">63%</div><div class="pfs-lbl">Akurasi</div></div>
+      <div class="pfs"><div class="pfs-num">18</div><div class="pfs-lbl">Total Prediksi</div></div>
+    </div>
+    <div class="pf-sec-title">Riwayat Prediksi</div>
+    <div class="hist-list" id="histList"></div>
+    <div class="pf-sec-title" style="margin-top:28px;">Log Credit</div>
+    <div class="clog" id="clogEl"></div>
+  </div>
+</div>
+
+<!-- ════════ VOTE POPUP ════════ -->
+<div class="ov" id="voteOv" onclick="closeVotePopup(event)">
+  <div class="popup">
+    <button class="pop-close" onclick="closeVotePopup()">×</button>
+    <div class="pop-tag" id="popTag"></div>
+    <div class="pop-q" id="popQ"></div>
+    <div class="pop-bar-sec">
+      <div class="pop-bar-title">Distribusi Vote Saat Ini</div>
+      <div class="pop-bar-row">
+        <span style="color:var(--green);font-weight:600;" id="popYesPct"></span>
+        <span style="color:var(--red);font-weight:600;" id="popNoPct"></span>
+      </div>
+      <div class="pop-bar-bg"><div class="pop-bar-fill" id="popBarFill"></div></div>
+      <div class="pop-voters" id="popVoters"></div>
+    </div>
+    <div class="pop-vote-lbl">Pilihan Lo</div>
+    <div class="pop-vote-row">
+      <div class="pvbtn yes" id="pvY" onclick="selectVote('yes')">
+        <span class="pvi">🟢</span><div class="pvl">YES</div><div class="pvs">Ini bakal terjadi</div>
+      </div>
+      <div class="pvbtn no" id="pvN" onclick="selectVote('no')">
+        <span class="pvi">🔴</span><div class="pvl">NO</div><div class="pvs">Nggak bakal terjadi</div>
+      </div>
+    </div>
+    <div class="pcr-row">
+      <div>
+        <div class="pcr-lbl">Jumlah Credit</div>
+        <div class="pcr-bal">Saldo: <span id="popBal"></span></div>
+      </div>
+      <div class="pcr-ctrl">
+        <button class="pcr-btn" onclick="adjC(-5)">−</button>
+        <div class="pcr-val" id="popCAmt">10</div>
+        <button class="pcr-btn" onclick="adjC(5)">+</button>
+      </div>
+    </div>
+    <button class="pop-cfm" id="popCfm" onclick="confirmVote()" disabled>Pilih dulu YES atau NO</button>
+    <div class="pop-dl" id="popDl"></div>
+  </div>
+</div>
+
+<!-- ════════ BUY CREDIT MODAL ════════ -->
+<div class="ov" id="buyOv" onclick="closeBuyModal(event)">
+  <div class="popup" style="max-width:400px;">
+    <button class="pop-close" onclick="closeBuyModal()">×</button>
+    <div class="modal-title">Beli Credit ⚡</div>
+    <div class="modal-sub">Credit dipakai buat ikut prediksi. Tidak bisa dicairkan ke uang.</div>
+    <div class="pkg-grid">
+      <div class="pkg" onclick="selPkg(this,100,9000)">
+        <div class="pkg-lbl">Starter</div><div class="pkg-cr">100</div>
+        <div class="pkg-lbl">credits</div><div class="pkg-price">Rp 9.000</div>
+      </div>
+      <div class="pkg pop" onclick="selPkg(this,300,19000)">
+        <div class="pkg-pop-tag">POPULER</div>
+        <div class="pkg-lbl">Value</div><div class="pkg-cr">300</div>
+        <div class="pkg-lbl">credits</div><div class="pkg-price">Rp 19.000</div>
+      </div>
+      <div class="pkg" onclick="selPkg(this,750,39000)">
+        <div class="pkg-lbl">Pro</div><div class="pkg-cr">750</div>
+        <div class="pkg-lbl">credits</div><div class="pkg-price">Rp 39.000</div>
+      </div>
+    </div>
+    <button class="modal-btn" onclick="buyConfirm()">Beli Sekarang</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ DATA ══
+const markets=[
+  {id:1,cat:'ekonomi',cl:'💰 Ekonomi',q:'Dollar tembus Rp17.000 sebelum akhir Juni?',yes:44,voters:3241,dl:'30 Jun',cost:10,voted:null},
+  {id:2,cat:'bola',cl:'⚽ Bola',q:'Timnas Indonesia menang di laga berikutnya?',yes:71,voters:8820,dl:'18 Jun',cost:10,voted:'yes'},
+  {id:3,cat:'cuaca',cl:'🌧️ Cuaca',q:'Jakarta akan banjir minimal sekali minggu ini?',yes:33,voters:1540,dl:'16 Jun',cost:5,voted:null},
+  {id:4,cat:'ekonomi',cl:'💰 Ekonomi',q:'BBM naik sebelum Juli 2025?',yes:62,voters:5502,dl:'30 Jun',cost:15,voted:null},
+  {id:5,cat:'kripto',cl:'₿ Kripto',q:'Bitcoin tembus $70.000 bulan ini?',yes:55,voters:4210,dl:'30 Jun',cost:10,voted:null},
+  {id:6,cat:'politik',cl:'🏛️ Politik',q:'Kabinet reshuffle terjadi sebelum Agustus?',yes:28,voters:2891,dl:'31 Jul',cost:20,voted:null},
+  {id:7,cat:'hiburan',cl:'🎭 Hiburan',q:'Film Indonesia masuk top 5 box office Asia bulan ini?',yes:41,voters:1200,dl:'30 Jun',cost:5,voted:null},
+  {id:8,cat:'ekonomi',cl:'💰 Ekonomi',q:'IHSG tembus level 7.500 sebelum akhir bulan?',yes:51,voters:3388,dl:'30 Jun',cost:10,voted:null},
+];
+
+const lbData=[
+  {rank:1,name:'@sotoymaster',init:'S',badge:'Ekonomi Expert',pts:14820,acc:74,str:12},
+  {rank:2,name:'@bola_prophet',init:'B',badge:'Bola Oracle',pts:12340,acc:71,str:8},
+  {rank:3,name:'@analisis_jawa',init:'A',badge:'Analis Ulung',pts:10980,acc:68,str:15},
+  {rank:4,name:'@netizen_legit',init:'N',badge:'All Rounder',pts:9210,acc:65,str:6},
+  {rank:5,name:'@kripto_benar',init:'K',badge:'Kripto Watcher',pts:8760,acc:63,str:4},
+  {rank:6,name:'@jkt_observer',init:'J',badge:'Cuaca Expert',pts:7540,acc:61,str:3},
+  {rank:7,name:'@bola_stats',init:'B',badge:'Bola Analyst',pts:6820,acc:60,str:9},
+  {rank:8,name:'@makro_indo',init:'M',badge:'Makro Watcher',pts:6200,acc:58,str:2},
+  {rank:9,name:'@trendspotter',init:'T',badge:'Hiburan Guru',pts:5880,acc:57,str:7},
+  {rank:10,name:'@artnesh',init:'A',badge:'Web3 Analyst',pts:4820,acc:63,str:5},
+];
+
+const histData=[
+  {q:'Timnas Indonesia menang di laga berikutnya?',v:'yes',r:'win',p:'+120'},
+  {q:'IHSG tembus 7.000 bulan lalu?',v:'yes',r:'win',p:'+80'},
+  {q:'Dollar tembus Rp16.500 bulan lalu?',v:'no',r:'lose',p:'-50'},
+  {q:'Bitcoin tembus $65.000 April lalu?',v:'yes',r:'win',p:'+200'},
+  {q:'Kabinet reshuffle sebelum Juni?',v:'no',r:'win',p:'+60'},
+  {q:'BBM naik April 2025?',v:'yes',r:'lose',p:'-30'},
+  {q:'Jakarta banjir minggu lalu?',v:'yes',r:'pending',p:'—'},
+  {q:'Dollar tembus Rp17.000 sebelum akhir Juni?',v:'no',r:'pending',p:'—'},
+];
+
+const clData=[
+  {desc:'Beli paket Value',date:'18 Mei 2025',amt:'+300',t:'plus'},
+  {desc:'Vote: Timnas menang',date:'17 Mei 2025',amt:'-10',t:'minus'},
+  {desc:'Bonus login harian',date:'17 Mei 2025',amt:'+10',t:'plus'},
+  {desc:'Vote: Bitcoin $65k',date:'16 Mei 2025',amt:'-20',t:'minus'},
+  {desc:'Bonus login harian',date:'16 Mei 2025',amt:'+10',t:'plus'},
+  {desc:'Bonus daftar akun',date:'15 Mei 2025',amt:'+100',t:'plus'},
+];
+
+let credits=250,filter='all',selPkgData=null,activeId=null,selChoice=null,vCr=10;
+
+// ══ NAV ══
+function goPage(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  const map={home:'nb-home',leaderboard:'nb-lb',profile:'nb-pf'};
+  document.getElementById(map[n])?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(n==='profile') renderProfile();
+}
+
+// ══ MARKETS ══
+function renderMarkets(){
+  const list=filter==='all'?markets:markets.filter(m=>m.cat===filter);
+  document.getElementById('marketGrid').innerHTML=list.map(m=>`
+    <div class="mcard" onclick="openVotePopup(${m.id})">
+      <div class="mc-top"><span class="mc-cat">${m.cl}</span><span class="mc-dl">Tutup ${m.dl}</span></div>
+      <div class="mc-q">${m.q}</div>
+      <div class="mc-bl"><span class="mc-yes">YES ${m.yes}%</span><span class="mc-no">NO ${100-m.yes}%</span></div>
+      <div class="mc-bb"><div class="mc-bf" style="width:${m.yes}%"></div></div>
+      <div class="mc-ft">
+        <span class="mc-vt">${m.voters.toLocaleString()} votes</span>
+        ${m.voted?`<span class="mc-vtag">✓ Voted ${m.voted.toUpperCase()}</span>`:`<span class="mc-cost">⚡ ${m.cost} credit</span>`}
+      </div>
+    </div>`).join('');
+}
+
+function filterCat(el,cat){
+  document.querySelectorAll('.cpill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');filter=cat;renderMarkets();
+}
+
+// ══ LEADERBOARD ══
+function renderLB(){
+  const ord=[lbData[1],lbData[0],lbData[2]];
+  const crowns=['🥈','🥇','🥉'];
+  document.getElementById('lbPodium').innerHTML=ord.map((u,i)=>`
+    <div class="pod ${u.rank===1?'p1':''}" onclick="showToast('Profil ${u.name}')">
+      <div class="pod-crown">${crowns[i]}</div>
+      <div class="pod-av">${u.init}</div>
+      <div class="pod-name">${u.name}</div>
+      <div class="pod-pts">${u.pts.toLocaleString()}</div>
+      <div class="pod-pts-lbl">points</div>
+      <div class="pod-acc">${u.acc}% akurasi</div>
+    </div>`).join('');
+  document.getElementById('lbBody').innerHTML=lbData.slice(3).map(u=>`
+    <div class="lb-row" onclick="showToast('Profil ${u.name}')">
+      <div class="lb-rank">${u.rank}</div>
+      <div class="lb-uc"><div class="lb-av">${u.init}</div><div><div class="lb-un">${u.name}</div><div class="lb-bs">${u.badge}</div></div></div>
+      <div class="lb-pts">${u.pts.toLocaleString()}</div>
+      <div class="lb-acc">${u.acc}%</div>
+      <div class="lb-st">🔥 ${u.str}</div>
+    </div>`).join('');
+}
+
+function switchLbTab(el,m){
+  document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');showToast('Data '+m+' dimuat');
+}
+
+// ══ PROFILE ══
+function renderProfile(){
+  document.getElementById('pf-credits').textContent=credits;
+  document.getElementById('histList').innerHTML=histData.map(h=>`
+    <div class="hist-item">
+      <div class="hist-q">${h.q}</div>
+      <div class="hvote ${h.v}">${h.v.toUpperCase()}</div>
+      <div class="hresult ${h.r}">${h.r==='win'?'✓ Menang '+h.p:h.r==='lose'?'✗ Kalah '+h.p:'⏳ Pending'}</div>
+    </div>`).join('');
+  document.getElementById('clogEl').innerHTML=clData.map(c=>`
+    <div class="clog-item">
+      <div><div class="cl-desc">${c.desc}</div><div class="cl-date">${c.date}</div></div>
+      <div class="cl-amt ${c.t}">${c.amt}</div>
+    </div>`).join('');
+}
+
+// ══ VOTE POPUP ══
+function openVotePopup(id){
+  const m=markets.find(x=>x.id===id);
+  activeId=id;selChoice=null;vCr=m.cost;
+  document.getElementById('popTag').textContent=m.cl;
+  document.getElementById('popQ').textContent=m.q;
+  document.getElementById('popYesPct').textContent='YES '+m.yes+'%';
+  document.getElementById('popNoPct').textContent='NO '+(100-m.yes)+'%';
+  document.getElementById('popBarFill').style.width=m.yes+'%';
+  document.getElementById('popVoters').textContent=m.voters.toLocaleString()+' user sudah vote';
+  document.getElementById('popBal').textContent=credits+' credit';
+  document.getElementById('popCAmt').textContent=vCr;
+  document.getElementById('pvY').className='pvbtn yes';
+  document.getElementById('pvN').className='pvbtn no';
+  document.getElementById('popDl').textContent='Event tutup: '+m.dl;
+  const btn=document.getElementById('popCfm');
+  if(m.voted){btn.disabled=true;btn.textContent='Sudah vote '+m.voted.toUpperCase();}
+  else{btn.disabled=true;btn.textContent='Pilih dulu YES atau NO';}
+  document.getElementById('voteOv').classList.add('open');
+}
+
+function closeVotePopup(e){
+  if(!e||e.target===document.getElementById('voteOv'))
+    document.getElementById('voteOv').classList.remove('open');
+}
+
+function selectVote(c){
+  selChoice=c;
+  document.getElementById('pvY').className='pvbtn yes'+(c==='yes'?' sel-yes':'');
+  document.getElementById('pvN').className='pvbtn no'+(c==='no'?' sel-no':'');
+  const btn=document.getElementById('popCfm');
+  btn.disabled=false;
+  btn.textContent=`Konfirmasi Vote ${c.toUpperCase()} · ${vCr} Credit`;
+}
+
+function adjC(d){
+  const m=markets.find(x=>x.id===activeId);
+  vCr=Math.max(m.cost,Math.min(credits,vCr+d));
+  document.getElementById('popCAmt').textContent=vCr;
+  if(selChoice) document.getElementById('popCfm').textContent=`Konfirmasi Vote ${selChoice.toUpperCase()} · ${vCr} Credit`;
+}
+
+function confirmVote(){
+  const m=markets.find(x=>x.id===activeId);
+  if(m.voted){showToast('Lo sudah vote di prediksi ini!');return;}
+  if(!selChoice){showToast('Pilih YES atau NO dulu!');return;}
+  if(credits<vCr){openBuyModal();return;}
+  m.voted=selChoice;credits-=vCr;
+  if(selChoice==='yes') m.yes=Math.min(99,Math.round(m.yes*m.voters/(m.voters+1)+100/(m.voters+1)));
+  else m.yes=Math.max(1,Math.round(m.yes*m.voters/(m.voters+1)));
+  m.voters+=1;
+  histData.unshift({q:m.q,v:selChoice,r:'pending',p:'—'});
+  clData.unshift({desc:'Vote: '+m.q.substring(0,38)+'…',date:'Baru saja',amt:'-'+vCr,t:'minus'});
+  updateUI();
+  document.getElementById('voteOv').classList.remove('open');
+  renderMarkets();
+  showToast(`✓ Vote ${selChoice.toUpperCase()} tercatat! ${vCr} credit dipakai.`);
+}
+
+// ══ BUY CREDIT ══
+function openBuyModal(){document.getElementById('buyOv').classList.add('open');}
+function closeBuyModal(e){if(!e||e.target===document.getElementById('buyOv'))document.getElementById('buyOv').classList.remove('open');}
+function selPkg(el,amt,price){
+  document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');selPkgData={amt,price};
+}
+function buyConfirm(){
+  if(!selPkgData){showToast('Pilih paket dulu!');return;}
+  credits+=selPkgData.amt;
+  clData.unshift({desc:'Beli '+selPkgData.amt+' credit',date:'Baru saja',amt:'+'+selPkgData.amt,t:'plus'});
+  updateUI();closeBuyModal();
+  showToast(`+${selPkgData.amt} credit berhasil! 🎉`);
+  selPkgData=null;
+  document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('sel'));
+}
+
+// ══ HELPERS ══
+function updateUI(){
+  document.getElementById('creditCount').textContent=credits+' Credits';
+  document.getElementById('pf-credits').textContent=credits;
+  document.getElementById('popBal').textContent=credits+' credit';
+}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ══ INIT ══
+renderMarkets();renderLB();renderProfile();
+</script>
+</body>
+</html>
