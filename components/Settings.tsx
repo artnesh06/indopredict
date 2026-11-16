@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, type JSX } from 'react';
 import { useStore } from '@/lib/store';
 
 type SettingsTab = 'profile' | 'account' | 'notifications' | 'appearance';

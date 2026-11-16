@@ -7,8 +7,8 @@ export function useAnimatedNumber(
 ) {
   const [displayValue, setDisplayValue] = useState(targetValue);
   const [isAnimating, setIsAnimating] = useState(false);
-  const animationRef = useRef<number>();
-  const startTimeRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
+  const startTimeRef = useRef<number | undefined>(undefined);
   const startValueRef = useRef<number>(targetValue);
 
   useEffect(() => {
